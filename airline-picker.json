@@ -1,0 +1,179 @@
+{
+  "name": "Airline Picker",
+  "color": "#ffffff",
+  "bgcolor": "#1a3c6e",
+  "aircrafts": {
+    "a320": {
+      "liveries": [
+        {
+          "name": "British Airways G-EUYA",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYA.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYB",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYB.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYC",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYC.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYD",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYD.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYE",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYE.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYF",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYF.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYG",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYG.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYH",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYH.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYI",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYI.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYJ",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYJ.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYK",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYK.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYL",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYL.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYM",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYM.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYN",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYN.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYO",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYO.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYP",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYP.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYR",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYR.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYS",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYS.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYT",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYT.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYU",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYU.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYV",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYV.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYW",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYW.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYX",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYX.png"
+          ]
+        },
+        {
+          "name": "British Airways G-EUYY",
+          "credits": "TAFTUGSSTUDIO",
+          "texture": [
+            "https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYY.png"
+          ]
+        }
+      ]
+    }
+  }
+}
