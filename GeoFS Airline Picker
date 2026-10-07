@@ -1,0 +1,237 @@
+// ==UserScript==
+// @name         GeoFS Airline Picker
+// @namespace    https://github.com/TAFTUGSSTUDIO/Airline-Picker
+// @version      0.3.0
+// @description  Pick airline registrations (BA A320 etc.) from a searchable list and apply the texture to your aircraft.
+// @author       TAFTUGSSTUDIO
+// @match        https://geo-fs.com/geofs.php*
+// @match        https://*.geo-fs.com/geofs.php*
+// @run-at       document-end
+// @grant        none
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    const JSON_URL = 'https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/airline-picker.json';
+
+    // Built-in copy of the pack, used if the online JSON can't be loaded
+    const EMBEDDED = {"name": "Airline Picker", "color": "#ffffff", "bgcolor": "#1a3c6e", "aircrafts": {"a320": {"liveries": [{"name": "British Airways G-EUYA", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYA.png"]}, {"name": "British Airways G-EUYB", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYB.png"]}, {"name": "British Airways G-EUYC", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYC.png"]}, {"name": "British Airways G-EUYD", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYD.png"]}, {"name": "British Airways G-EUYE", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYE.png"]}, {"name": "British Airways G-EUYF", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYF.png"]}, {"name": "British Airways G-EUYG", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYG.png"]}, {"name": "British Airways G-EUYH", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYH.png"]}, {"name": "British Airways G-EUYI", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYI.png"]}, {"name": "British Airways G-EUYJ", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYJ.png"]}, {"name": "British Airways G-EUYK", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYK.png"]}, {"name": "British Airways G-EUYL", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYL.png"]}, {"name": "British Airways G-EUYM", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYM.png"]}, {"name": "British Airways G-EUYN", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYN.png"]}, {"name": "British Airways G-EUYO", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYO.png"]}, {"name": "British Airways G-EUYP", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYP.png"]}, {"name": "British Airways G-EUYR", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYR.png"]}, {"name": "British Airways G-EUYS", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYS.png"]}, {"name": "British Airways G-EUYT", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYT.png"]}, {"name": "British Airways G-EUYU", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYU.png"]}, {"name": "British Airways G-EUYV", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYV.png"]}, {"name": "British Airways G-EUYW", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYW.png"]}, {"name": "British Airways G-EUYX", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYX.png"]}, {"name": "British Airways G-EUYY", "credits": "TAFTUGSSTUDIO", "texture": ["https://raw.githubusercontent.com/TAFTUGSSTUDIO/Airline-Picker/main/G-EUYY.png"]}]}}};
+
+    let data = null;      // loaded pack JSON
+    let activeName = null; // currently applied livery name
+
+    /* ---------- helpers ---------- */
+
+    const acPath = () => {
+        const p = geofs.aircraft.instance.fullPath.split('/');
+        return p[p.length - 2];
+    };
+
+    function el(tag, attrs = {}, text = '') {
+        const e = document.createElement(tag);
+        Object.keys(attrs).forEach(k => e.setAttribute(k, attrs[k]));
+        if (text) e.textContent = text;
+        return e;
+    }
+
+    let loadError = '';
+
+    async function loadData() {
+        try {
+            const res = await fetch(JSON_URL + '?t=' + Date.now());
+            if (!res.ok) throw new Error('HTTP ' + res.status + (res.status === 404 ? ' (file not found on main, or repo is private)' : ''));
+            data = await res.json();
+            loadError = '';
+        } catch (err) {
+            console.error('[AirlinePicker] could not load JSON', err);
+            loadError = String(err.message || err);
+            data = EMBEDDED; // fall back to the built-in pack
+            console.warn('[AirlinePicker] using built-in pack');
+        }
+    }
+
+    // remember "this aircraft key -> use this pack entry" choices
+    function getMap() {
+        try { return JSON.parse(localStorage.getItem('airlinePickerMap') || '{}'); } catch (e) { return {}; }
+    }
+    function setMap(key, packKey) {
+        const m = getMap();
+        m[key] = packKey;
+        try { localStorage.setItem('airlinePickerMap', JSON.stringify(m)); } catch (e) {}
+    }
+
+    function aircraftName() {
+        try { return geofs.aircraft.instance.aircraftRecord.name || ''; } catch (e) { return ''; }
+    }
+
+    function currentAircraft() {
+        if (!data || !data.aircrafts) return null;
+        const k = acPath();
+        const mapped = getMap()[k];
+        return data.aircrafts[k] || (mapped && data.aircrafts[mapped]) || null;
+    }
+
+    // how many textures each part of the current model has (helps pick the right slot)
+    function textureInfo() {
+        try {
+            const parts = geofs.aircraft.instance.definition.parts;
+            const out = [];
+            parts.forEach((p, i) => {
+                const m = p['3dmodel'] && p['3dmodel']._model;
+                const t = m && m._rendererResources && m._rendererResources.textures;
+                if (t) out.push('part ' + i + ': ' + t.length + ' textures');
+            });
+            return out.join(' | ');
+        } catch (e) { return ''; }
+    }
+
+    /* ---------- texture loading (same API calls LiverySelector uses) ---------- */
+
+    function applyLivery(ac, livery) {
+        const parts = ac.parts || [0];
+        const index = ac.index || [0];
+        try {
+            for (let i = 0; i < livery.texture.length; i++) {
+                const model3d = geofs.aircraft.instance.definition.parts[parts[i]]['3dmodel'];
+                if (geofs.version == 2.9) {
+                    geofs.api.Model.prototype.changeTexture(livery.texture[i], index[i], model3d);
+                } else if (geofs.version >= 3.0 && geofs.version <= 3.7) {
+                    geofs.api.changeModelTexture(model3d._model, livery.texture[i], index[i]);
+                } else {
+                    geofs.api.changeModelTexture(model3d._model, livery.texture[i], { index: index[i] });
+                }
+            }
+            activeName = livery.name;
+            setStatus('Loaded: ' + livery.name);
+        } catch (err) {
+            console.error('[AirlinePicker]', err);
+            setStatus('Could not apply texture (see console)');
+        }
+    }
+
+    /* ---------- UI ---------- */
+
+    let panel, listEl, searchEl, statusEl, titleEl;
+
+    function setStatus(msg) {
+        if (statusEl) statusEl.textContent = msg;
+    }
+
+    function buildStyles() {
+        const css = `
+        #airlinepicker-panel{position:fixed;left:70px;bottom:70px;width:300px;max-height:60vh;display:none;flex-direction:column;
+            background:rgba(20,24,32,.96);color:#fff;border:1px solid #3a4658;border-radius:8px;z-index:99999;
+            font-family:sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+        #airlinepicker-panel.open{display:flex}
+        #airlinepicker-panel h3{margin:0;padding:10px 12px;font-size:15px;background:#1a3c6e;border-radius:8px 8px 0 0}
+        #airlinepicker-panel input{margin:8px;padding:7px 9px;border-radius:5px;border:1px solid #3a4658;background:#0f131a;color:#fff;font-size:14px}
+        #airlinepicker-list{list-style:none;margin:0;padding:0 8px 8px;overflow-y:auto;flex:1}
+        #airlinepicker-list li{padding:8px 10px;margin-bottom:4px;border-radius:5px;background:#252d3a;cursor:pointer;font-size:14px}
+        #airlinepicker-list li:hover{background:#34425a}
+        #airlinepicker-list li.active{background:#1a3c6e;font-weight:bold}
+        #airlinepicker-list li.empty{cursor:default;background:none;color:#aab}
+        #airlinepicker-status{padding:6px 12px 10px;font-size:12px;color:#aab}
+        #airlinepicker-btn{font-weight:bold;white-space:nowrap}
+        `;
+        const s = el('style');
+        s.textContent = css;
+        document.head.appendChild(s);
+    }
+
+    function renderList() {
+        const ac = currentAircraft();
+        const q = searchEl.value.trim().toLowerCase();
+        listEl.innerHTML = '';
+
+        if (!data) {
+            listEl.appendChild(el('li', { class: 'empty' }, 'Could not load pack: ' + (loadError || 'unknown error') + '. Close and reopen this panel to retry.'));
+            return;
+        }
+        if (!ac || !ac.liveries || !ac.liveries.length) {
+            const info = el('li', { class: 'empty' }, 'No liveries linked to this aircraft.');
+            const keyLine = el('li', { class: 'empty', style: 'word-break:break-all;font-size:12px' },
+                (aircraftName() ? aircraftName() + ' | ' : '') + 'key: ' + acPath());
+            listEl.appendChild(info);
+            listEl.appendChild(keyLine);
+            Object.keys(data.aircrafts || {}).forEach(packKey => {
+                const b = el('li', { style: 'text-align:center;background:#1a3c6e' }, 'Use "' + packKey + '" liveries on this aircraft');
+                b.addEventListener('click', () => { setMap(acPath(), packKey); renderList(); });
+                listEl.appendChild(b);
+            });
+            return;
+        }
+
+        if (statusEl && !statusEl.textContent) setStatus(textureInfo());
+        const matches = ac.liveries.filter(l => l.name.toLowerCase().includes(q));
+        if (!matches.length) {
+            listEl.appendChild(el('li', { class: 'empty' }, 'No match.'));
+            return;
+        }
+        matches.forEach(l => {
+            const li = el('li', {}, l.name);
+            if (l.name === activeName) li.classList.add('active');
+            li.addEventListener('click', () => {
+                applyLivery(ac, l);
+                renderList();
+            });
+            listEl.appendChild(li);
+        });
+    }
+
+    function buildPanel() {
+        panel = el('div', { id: 'airlinepicker-panel' });
+        titleEl = el('h3', {}, 'Airline Picker');
+        searchEl = el('input', { type: 'text', placeholder: 'Search registration...' });
+        listEl = el('ul', { id: 'airlinepicker-list' });
+        statusEl = el('div', { id: 'airlinepicker-status' });
+
+        // keep typing in the search box from flying the plane
+        ['keydown', 'keyup', 'keypress'].forEach(ev =>
+            searchEl.addEventListener(ev, e => e.stopPropagation()));
+        searchEl.addEventListener('input', renderList);
+
+        panel.append(titleEl, searchEl, listEl, statusEl);
+        document.body.appendChild(panel);
+    }
+
+    function buildButton() {
+        const btn = el('button', {
+            id: 'airlinepicker-btn',
+            title: 'Airline Picker',
+            class: 'mdl-button mdl-js-button geofs-f-standard-ui'
+        }, 'Airline Picker');
+
+        btn.addEventListener('click', async () => {
+            const opening = !panel.classList.contains('open');
+            panel.classList.toggle('open');
+            if (opening) {
+                if (!data) await loadData();
+                renderList();
+                searchEl.focus();
+            }
+        });
+
+        const bar = document.querySelector('.geofs-ui-bottom');
+        if (bar) {
+            bar.insertBefore(btn, bar.children[4] || null);
+        } else {
+            // fallback: floating button
+            btn.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:99999;background:#1a3c6e;color:#fff;';
+            document.body.appendChild(btn);
+        }
+    }
+
+    /* ---------- start once GeoFS is ready ---------- */
+
+    const wait = setInterval(() => {
+        if (window.geofs && geofs.aircraft && geofs.aircraft.instance && document.querySelector('.geofs-ui-bottom')) {
+            clearInterval(wait);
+            buildStyles();
+            buildPanel();
+            buildButton();
+            loadData();
+            console.log('[AirlinePicker] ready');
+        }
+    }, 500);
+})();
